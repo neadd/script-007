@@ -1,11 +1,14 @@
 import os
 import utils.config as cfg
 import file as ops
-
-if __name__ == '__main__':
+def processrequest():
       parser=cfg.cmd_args_parser()
       params=parser.parse_args()
-      os.chdir(params.folder)
+      try:
+            os.chdir(params.folder)
+      except NotADirectoryError:
+            print("Absent folder")
+            exit()
       if params.cmd == 'list':
             ops.list()
       elif params.cmd == 'create':
@@ -16,3 +19,9 @@ if __name__ == '__main__':
             ops.read(params.name)
       elif params.cmd == 'meta':
             ops.meta(params.name)
+      else:
+            print("Incorrect command")
+            exit()
+
+if __name__ == '__main__':
+      processrequest()
