@@ -1,6 +1,7 @@
 import os
+actions={'list':list,'create':create,'delete':delete,'read':read,'meta':meta}
 
-def list():
+def list(_):
     return
 
 def create(filename):
