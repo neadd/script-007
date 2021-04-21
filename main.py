@@ -1,5 +1,5 @@
 import os
-import utils.config as cfg
+import utils.getconfig as cfg
 import file as ops
 def processrequest():
       parser=cfg.cmd_args_parser()
