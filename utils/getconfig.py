@@ -1,30 +1,28 @@
+"""Configuration module"""
 import os
 import sys
-import argparse
 import configparser
-import utils.genfilename as genfilename
-import fileops.fileops as fops
+import utils.mylogger as log
 
 
-try:
-    config=configparser.ConfigParser()
-    config.read('config.ini')
-    NAME_LEN=int(config['MAIN']['MAX_NAMELEN'])
-    DEF_STORAGE=config['MAIN']['STORAGE']
-except (configparser.Error,TypeError,ValueError):
-    print("Config file error: "+sys.exc_info()[1].args[0])
-    exit()
+def readconfig():
+    """Read initial config and setup variables"""
+    try:
+        global __NAMLEN__
+        global __DEFSTORAGE__
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        __NAMLEN__ = int(config['MAIN']['MAX_NAMELEN'])
+        __DEFSTORAGE__ = config['MAIN']['STORAGE']
+    
+    except (configparser.Error,TypeError,ValueError):
+        log.raiserror("Config file error: " + sys.exc_info()[1].args[0])
+        exit()
 
+def getmaxnamelen():
+    """Get configured maximum length of file name"""
+    return __NAMLEN__
 
-def cmd_args_parser():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-f', '--folder', default=DEF_STORAGE,
-        help='working directory')
-    parser.add_argument(
-        '-n','--name',default=genfilename.genfilename(NAME_LEN),help='file name')
-    parser.add_argument(
-        '-c','--cmd',required=True,
-        choices=fops.getactionslist(),
-        help='command to execute')
-    return parser
+def getdefstorage():
+    """Get default storage folder"""
+    return __DEFSTORAGE__
