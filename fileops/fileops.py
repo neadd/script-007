@@ -18,7 +18,7 @@ def list(_):
         for fname in os.listdir(None):
             print(fname)
     except OSError:
-        log.raiserror("list folder error")
+        log.raiserror("list folder error"+sys.exc_info()[1].args[0])
     return
 
 def create(filename):
@@ -52,7 +52,7 @@ def meta(filename):
         print("File: "+filename)
         print(statinfo)
     except OSError:
-        log.raiserror("Read file error: "+sys.exc_info()[1].args[0])
+        log.raiserror("Meta file error: "+sys.exc_info()[1].args[0])
     return
 
 def getactionslist():
