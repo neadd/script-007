@@ -24,6 +24,7 @@ def cmd_args_parser():
     parser.add_argument(
         '-n','--name',default=genfilename.genfilename(NAME_LEN),help='file name')
     parser.add_argument(
-        '-c','--cmd',default=fops.getactionslist()[0],
-        choices=fops.getactionslist(),help='command to execute')
+        '-c','--cmd',required=True,
+        choices=fops.getactionslist(),
+        help='command to execute')
     return parser
