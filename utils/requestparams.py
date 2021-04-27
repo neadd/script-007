@@ -24,8 +24,13 @@ def requestparams():
     parser.add_argument(
         '-c','--cmd',
         required = True,
-        choices  = fops.getactionslist(),
+        choices  = fops.getactions(),
         help     = 'command to execute')
+    
+    parser.add_argument(
+        '-d','--data',
+        default = '',
+        help    = 'Data')
     
     params = parser.parse_args()
     return params

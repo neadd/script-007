@@ -9,7 +9,8 @@ import fileops.fileops as ops
 def processrequest():
     """Get request parameters and call execute request"""
     params = req.requestparams()
-    responce = ops.execute_command(params)
+    fserver=ops.Filservice(params)
+    responce = ops.execute_command(fserver)
     return responce
 
 if __name__ == '__main__':
@@ -18,4 +19,4 @@ if __name__ == '__main__':
                         level    = logging.WARNING)
     cfg.readconfig()
     result = processrequest()
-    print result
+    print (result)

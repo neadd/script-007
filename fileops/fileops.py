@@ -1,75 +1,105 @@
 """File operations module"""
 import sys
 import os
-import utils.logging as log
+import utils.mylogger as log
 
 
-def execute_command(params):
-    """Execute command according to request params"""
-    try:
-        os.chdir(params.folder)
-    except (NotADirectoryError,PermissionError,FileNotFoundError):
-        log.raiserror("Incorrect folder, exception " 
-                      + sys.exc_info()[1].args[0])
-        exit()
-    result = actions.get(params.cmd,
-                        lambda x: log.raiserror("Incorrect command: "+x)
-                        )(params.name)
-    return result
+actions=["list","create","delete","read","meta"]
 
-def list(_):
-    """List folder contents"""
-    try:
-        result = os.listdir(None)
-    except OSError:
-        log.raiserror("list folder error" + sys.exc_info()[1].args[0])
-    return result
-
-def create(filename):
-    """Create file in folder"""
-    try:
-        if os.path.exists(filename):
-            raise OSError("File exists")
-        with open(filename, "w") as fhandler:
-            result = "File created: " + filename
-    except OSError:
-        log.raiserror("Create file error: " + sys.exc_info()[1].args[0])
-    return result
-
-def delete(filename):
-    """Delete file in folder"""
-    try:
-        os.remove(filename)
-        result = "File deleted: " + filename
-    except OSError:
-        log.raiserror("Delete file error: " + sys.exc_info()[1].args[0])   
-    return result
-
-def read(filename):
-    """Open and read file"""
-    try:
-        with open(filename, "r") as fhandler:
-            result = fhandler.read()
-    except OSError:
-        log.raiserror("Read file error: " + sys.exc_info()[1].args[0]) 
-    return result
-
-def meta(filename):
-    """Get file metainformation"""
-    try:
-        statinfo = os.stat(filename)
-    except OSError:
-        log.raiserror("Meta file error: " + sys.exc_info()[1].args[0])
-    return statinfo
-
-def getactionslist():
+def getactions():
     """Get list of possible actions"""
-    return actions.keys()
+    return actions
 
-actions={
-        "list"   : list,
-        "create" : create,
-        "delete" : delete ,
-        "read"   : read,
-        "meta"   : meta
-        }
+def execute_command(fileservice):
+    """Execute command according to request params"""
+    command=fileservice.getcmd()
+    if command=="list":
+        result=fileservice.list()
+    elif command=="create":
+        result=fileservice.create()
+    elif command=="delete":
+        result=fileservice.delete()
+    elif command=="read":
+        result=fileservice.read()
+    elif command=="meta":
+        result=fileservice.meta()
+    else:
+        log.raiserror(f"Incorrect command {command}")
+        raise ValueError(f"Incorrect command {command}")
+    return result
+
+
+class Filservice:
+    
+    _instance=None
+    _not_inited=True
+    def __new__(cls,*args,**kwargs):
+        if not isinstance(cls._instance, cls):
+            cls._instance=super(Filservice,cls).__new__(cls)
+        return cls._instance
+    
+    def __init__(self,*args,**kwargs):
+        if self._not_inited:
+            self._params=args[0]
+            try:
+                os.chdir(self._params.folder)
+            except (NotADirectoryError,PermissionError,FileNotFoundError):
+                log.raiserror(
+                    f"Incorrect folder, exception {sys.exc_info()[1].args[0]}")
+                exit()
+            self._not_inited=False
+            print ("inited")
+    
+    def getcmd(self):
+        return self._params.cmd
+    
+    def list(self):
+        """List folder contents"""
+        try:
+            result = os.listdir('')
+        except OSError:
+            log.raiserror(f"list folder error {sys.exc_info()[1].args[0]}")
+            raise
+        return result
+    
+    def create(self):
+        """Create file in folder"""
+        try:
+            if os.path.exists(self._params.name):
+                raise OSError("File exists")
+            with open(self._params.name, "x") as fhandler:
+                fhandler.write(self._params.data)
+                result = f"File created: {self._params.name}"
+        except OSError:
+            log.raiserror(f"Create file error: {sys.exc_info()[1].args[0]}")
+            raise
+        return result
+    
+    def delete(self):
+        """Delete file in folder"""
+        try:
+            os.remove(self._params.name)
+            result = f"File deleted: {self._params.name}"
+        except OSError:
+            log.raiserror(f"Delete file error: {sys.exc_info()[1].args[0]}")
+            raise
+        return result
+    
+    def read(self):
+        """Open and read file"""
+        try:
+            with open(self._params.name, "r") as fhandler:
+                result = fhandler.read()
+        except OSError:
+            log.raiserror(f"Read file error: {sys.exc_info()[1].args[0]}")
+            raise
+        return result
+    
+    def meta(self):
+        """Get file metainformation"""
+        try:
+            statinfo = os.stat(self._params.name)
+        except OSError:
+            log.raiserror(f"Meta file error: {sys.exc_info()[1].args[0]}")
+            raise
+        return statinfo
