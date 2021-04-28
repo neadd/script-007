@@ -53,6 +53,9 @@ class Filservice:
     def getcmd(self):
         return self._params.cmd
     
+    def getparams(self):
+        return self._params
+    
     def list(self):
         """List folder contents"""
         try:
