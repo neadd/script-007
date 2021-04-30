@@ -46,9 +46,8 @@ class Filservice:
             except (NotADirectoryError,PermissionError,FileNotFoundError):
                 log.raiserror(
                     f"Incorrect folder, exception {sys.exc_info()[1].args[0]}")
-                exit()
+                raise
             self._not_inited=False
-            print ("inited")
     
     def getcmd(self):
         return self._params.cmd
@@ -70,7 +69,7 @@ class Filservice:
         try:
             if os.path.exists(self._params.name):
                 raise OSError("File exists")
-            with open(self._params.name, "x") as fhandler:
+            with open(self._params.name, "xb") as fhandler:
                 fhandler.write(self._params.data)
                 result = f"File created: {self._params.name}"
         except OSError:
@@ -91,7 +90,7 @@ class Filservice:
     def read(self):
         """Open and read file"""
         try:
-            with open(self._params.name, "r") as fhandler:
+            with open(self._params.name, "rb") as fhandler:
                 result = fhandler.read()
         except OSError:
             log.raiserror(f"Read file error: {sys.exc_info()[1].args[0]}")

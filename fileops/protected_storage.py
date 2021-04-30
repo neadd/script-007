@@ -35,18 +35,6 @@ class Protected_storage():
             log.raiserror(f"signature calc error: {sys.exc_info()[1].args[0]}")
             raise
     
-    def getcmd(self):
-        """skip getcmd to base method"""
-        return self._storageclass.getcmd()
-    
-    def getparams(self):
-        """skip getparams to base method"""
-        return self._storageclass.getparams()
-    
-    def list(self):
-        """ skip list to base method"""
-        return self._storageclass.list()
-    
     def create(self):
         """Decorate for create file in folder"""
         try:
@@ -60,7 +48,7 @@ class Protected_storage():
                     raise NotADirectoryError(f"Not a folder: {sigdir}")
                 os.mkdir(sigdir)
             sigfile=os.path.join('.','.sig',params.name)
-            with open(sigfile, "x") as shandler:
+            with open(sigfile, "xb") as shandler:
                 shandler.write(md5hash)
         except Exception:
             log.raiserror(f"Create file error: {sys.exc_info()[1].args[0]}")
@@ -87,7 +75,7 @@ class Protected_storage():
             params=self._storageclass.getparams()
             md5hash=self._calc_signature(params.name,content,meta)
             sigfile=os.path.join('.','.sig',params.name)
-            with open(sigfile, "r") as shandler:
+            with open(sigfile, "rb") as shandler:
                 storedhash=shandler.read()
             if md5hash != storedhash:
                 content=''
@@ -97,6 +85,6 @@ class Protected_storage():
             raise
         return content
     
-    def meta(self):
-        """ skip meta to base method"""
-        return self._storageclass.meta()
+    def __getattr__(self,name):
+        """ skip other to base method"""
+        return getattr(self._storageclass,name)

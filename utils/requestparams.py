@@ -5,7 +5,7 @@ import argparse
 import utils.genfilename as genfilename
 import fileops.fileops as fops
 import utils.getconfig as cfg
-
+import utils.mylogger as log
 
 def requestparams():
     """compile request params"""
@@ -28,9 +28,31 @@ def requestparams():
         help     = 'command to execute')
     
     parser.add_argument(
+        '-k','--keypath',
+        default = None,
+        help    = 'Asymmetric key path')
+    
+    parser.add_argument(
         '-d','--data',
         default = '',
         help    = 'Data')
     
+    parser.add_argument(
+        '-i','--infile',
+        default = None,
+        help    = 'Read data from file')
+    
+    parser.add_argument(
+        '-w','--writeto',
+        default = None,
+        help    = 'write read data to file (rsa only)')
+    
     params = parser.parse_args()
+    if params.infile != None:
+        try:
+            with open(params.infile,"rb") as datafile:
+                params.data=datafile.read()
+        except OSError:
+            log.raiserror(f"Read data file error: {sys.exc_info()[1].args[0]}")
+            raise
     return params

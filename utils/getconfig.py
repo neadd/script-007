@@ -20,10 +20,10 @@ def readconfig():
         if PROTECT_ENABLE == True:
             PROTECT_KEYFILE = config['PROTECT']['KEYFILE']
         else:
-            PROTECT_KEYFILE = Null
+            PROTECT_KEYFILE = None
     
     except (configparser.Error,TypeError,ValueError):
-        log.raiserror("Config file error: " + sys.exc_info()[1].args[0])
+        log.raiserror(f"Config file error: {sys.exc_info()[1].args[0]}")
         exit()
 
 def getmaxnamelen():
